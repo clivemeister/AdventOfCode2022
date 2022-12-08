@@ -1,4 +1,4 @@
-f = open("day07_input.txt")
+f = open("day07_test.txt")
 input = f.readlines()
 
 
@@ -28,20 +28,7 @@ while i<len(input):
             words = input[i].strip(' \n').split()
         
             if words[1] =='cd':
-                next_dir = words[2]
-                if next_dir == '..':
-                    print("Popping from path:", current_path)
-                    current_path.pop()
-                else:
-                    current_path.append(next_dir)
-                current_dir = getpath(current_path)
-                print("into new subdir",current_dir)
-                if current_dir in dirsize:
-                    print("unexpectedly already have this directory:", current_dir)
-                else:
-                    dirsize[current_dir] = 0
-                    subdirs[current_dir] = []
-                break
+                break  #come to the end of this dir listing, so break out
 
             if words[0].isdigit():
                 dirsize[current_dir] += int(words[0])
@@ -52,13 +39,21 @@ while i<len(input):
 
             i += 1
     elif line=="$ cd ..":
+        print("Popping from path:", current_path)
+        current_path.pop()
         i += 1
     else:
         words = line.split()
-        current_dir = words[2]
-        print("new subdir",current_dir)
-        dirsize[current_dir] = 0
-        subdirs[current_dir] = []
+        next_dir = words[2]
+        current_path.append(next_dir)
+        current_dir = getpath(current_path)
+        print("into new subdir",current_dir)
+        if current_dir in dirsize:
+            print("unexpectedly already have this directory:", current_dir)
+        else:
+            dirsize[current_dir] = 0
+            subdirs[current_dir] = []
+
         i += 1
 
 def dir_size_with_subdirs(thisdir):
@@ -69,6 +64,7 @@ def dir_size_with_subdirs(thisdir):
 
 tot = 0
 for dir in dirsize:
+    print("sizing directory",dir)
     size = dir_size_with_subdirs(dir)
     print("Size with subdirs:",dir,size)
     if size<=100000:
